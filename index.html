@@ -252,7 +252,7 @@
 
   .weekdays {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     margin-bottom: 6px;
   }
   .weekdays span {
@@ -266,12 +266,14 @@
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 6px;
+    min-width: 0;
   }
 
   .day-cell {
     position: relative;
+    min-width: 0;
     aspect-ratio: 1 / 1;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
