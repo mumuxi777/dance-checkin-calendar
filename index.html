@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>跳舞打卡日历</title>
+<meta name="description" content="记录 Jazz / Hip-Hop / 全能 / 游泳 上课打卡的可爱日历">
+<meta name="theme-color" content="#FF7FA0">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="打卡日历">
+<style>
+  :root {
+    --bg: #FFF8F3;
+    --bg-pattern: #FFEDF1;
+    --surface: #FFFFFF;
+    --surface-alt: #FFF3F5;
+    --ink: #4A3F4E;
+    --ink-soft: #948892;
+    --ink-faint: #C8BCC4;
+    --border: #F5DEE3;
+    --accent: #FF7FA0;
+    --accent-ink: #FFFFFF;
+
+    --jazz: #FF7F9C;
+    --jazz-bg: #FFE4EA;
+    --jazz-bg-dark: #FFD3DD;
+
+    --hiphop: #9B7FE8;
+    --hiphop-bg: #EBE3FC;
+    --hiphop-bg-dark: #DCCFFA;
+
+    --allround: #4BC08B;
+    --allround-bg: #DEF5EA;
+    --allround-bg-dark: #C7EEDA;
+
+    --swim: #3FA0E0;
+    --swim-bg: #DCEFFC;
+    --swim-bg-dark: #C3E4FA;
+
+    --shadow: 0 1px 2px rgba(180, 120, 140, 0.08), 0 6px 16px rgba(180, 120, 140, 0.10);
+    --shadow-sm: 0 1px 3px rgba(180, 120, 140, 0.12);
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+  }
+
+  /* ---- Color skins: each one fully defines its own look ---- */
+  [data-skin="pink-blue"] {
+    --bg: #F5FAFE; --bg-pattern: #FFE9F0;
+    --surface: #FFFFFF; --surface-alt: #EAF4FD;
+    --ink: #3E4650; --ink-soft: #8B96A3; --ink-faint: #C9D3DD;
+    --border: #DCEBF8;
+    --accent: #FF6FA3; --accent-ink: #FFFFFF;
+  }
+  [data-skin="lavender"] {
+    --bg: #FAF7FE; --bg-pattern: #F1E9FB;
+    --surface: #FFFFFF; --surface-alt: #F3ECFC;
+    --ink: #473F55; --ink-soft: #9689A6; --ink-faint: #D6CBE6;
+    --border: #E9DDF7;
+    --accent: #A47FEA; --accent-ink: #FFFFFF;
+  }
+  [data-skin="mint"] {
+    --bg: #F6FDFA; --bg-pattern: #E4F8EF;
+    --surface: #FFFFFF; --surface-alt: #EAFBF2;
+    --ink: #3B4A43; --ink-soft: #849A8F; --ink-faint: #CDE6D9;
+    --border: #D7F2E4;
+    --accent: #3FBE8C; --accent-ink: #FFFFFF;
+  }
+  [data-skin="peach"] {
+    --bg: #FFFAF3; --bg-pattern: #FFF0DC;
+    --surface: #FFFFFF; --surface-alt: #FFF4E5;
+    --ink: #524238; --ink-soft: #A6907E; --ink-faint: #E9D2B7;
+    --border: #FBE6C8;
+    --accent: #FFA24D; --accent-ink: #3A2712;
+  }
+  [data-skin="midnight"] {
+    --bg: #221C27; --bg-pattern: #271F2D;
+    --surface: #2C2432; --surface-alt: #362B3C;
+    --ink: #F5ECF2; --ink-soft: #B8A9BC; --ink-faint: #6E5F73;
+    --border: #40333F;
+    --accent: #FF8FAE; --accent-ink: #2A1A20;
+
+    --jazz: #FF8FAE; --jazz-bg: #4A2C38; --jazz-bg-dark: #5C3546;
+    --hiphop: #B79BFF; --hiphop-bg: #3A2E52; --hiphop-bg-dark: #46395F;
+    --allround: #6BD6A4; --allround-bg: #1F4438; --allround-bg-dark: #245243;
+    --swim: #6FC1F5; --swim-bg: #1D3A50; --swim-bg-dark: #234A63;
+
+    --shadow: 0 1px 2px rgba(0,0,0,0.25), 0 8px 20px rgba(0,0,0,0.35);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 8% 12%, var(--bg-pattern) 0%, transparent 40%),
+      radial-gradient(circle at 92% 88%, var(--bg-pattern) 0%, transparent 40%),
+      var(--bg);
+    color: var(--ink);
+    font-family: 'Segoe UI Rounded', 'SF Pro Rounded', ui-rounded, 'Segoe UI', -apple-system, 'Nunito', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 18px 60px;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.25s ease;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 620px;
+    position: relative;
+  }
+
+  .masthead {
+    text-align: center;
+    margin-bottom: 26px;
+  }
+
+  .masthead .kicker {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin: 0 0 6px;
+  }
+
+  .masthead h1 {
+    font-size: clamp(26px, 5vw, 34px);
+    margin: 0;
+    font-weight: 800;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 22px 22px 20px;
+    border: 1px solid var(--border);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    gap: 10px;
+  }
+
+  .nav-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: var(--surface-alt);
+    color: var(--ink);
+    font-size: 17px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, background 0.15s ease;
+    flex: none;
+  }
+  .nav-btn:hover { background: var(--jazz-bg); transform: translateY(-1px); }
+  .nav-btn:active { transform: translateY(0) scale(0.95); }
+  .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .month-title-wrap { text-align: center; }
+  .month-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+  .today-link {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 2px 0 0;
+    letter-spacing: 0.02em;
+  }
+  .today-link:hover { text-decoration: underline; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+
+  .legend-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    background: var(--surface-alt);
+    color: var(--ink-soft);
+  }
+  .legend-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: none;
+  }
+  .legend-pill.jazz .legend-dot { background: var(--jazz); }
+  .legend-pill.hiphop .legend-dot { background: var(--hiphop); }
+  .legend-pill.allround .legend-dot { background: var(--allround); }
+  .legend-pill.swim .legend-dot { background: var(--swim); }
+
+  .weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 6px;
+  }
+  .weekdays span {
+    text-align: center;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+    padding-bottom: 6px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+
+  .day-cell {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface-alt);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px 2px;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    font-family: inherit;
+  }
+  .day-cell:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+  .day-cell:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .day-cell.empty { visibility: hidden; cursor: default; }
+  .day-cell.empty:hover { transform: none; box-shadow: none; }
+
+  .day-num {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+
+  .day-cell.today { box-shadow: 0 0 0 2px var(--accent) inset; }
+  .day-cell.today .day-num { color: var(--accent); }
+
+  .day-cell.jazz { background: var(--jazz-bg); border-color: var(--jazz-bg-dark); }
+  .day-cell.hiphop { background: var(--hiphop-bg); border-color: var(--hiphop-bg-dark); }
+  .day-cell.allround { background: var(--allround-bg); border-color: var(--allround-bg-dark); }
+  .day-cell.swim { background: var(--swim-bg); border-color: var(--swim-bg-dark); }
+
+  .day-cell.jazz .day-num { color: var(--jazz); }
+  .day-cell.hiphop .day-num { color: var(--hiphop); }
+  .day-cell.allround .day-num { color: var(--allround); }
+  .day-cell.swim .day-num { color: var(--swim); }
+
+  .day-tag {
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    padding: 1px 6px;
+    border-radius: 999px;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .day-cell.jazz .day-tag { background: var(--jazz); }
+  .day-cell.hiphop .day-tag { background: var(--hiphop); }
+  .day-cell.allround .day-tag { background: var(--allround); }
+  .day-cell.swim .day-tag { background: var(--swim); }
+
+  /* Day picker popover */
+  .popover {
+    position: absolute;
+    z-index: 20;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 136px;
+    animation: pop-in 0.12s ease-out;
+  }
+  @keyframes pop-in {
+    from { opacity: 0; transform: scale(0.94) translateY(-2px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .popover button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    padding: 8px 9px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .popover button:hover { background: var(--surface-alt); }
+  .popover button .swatch {
+    width: 10px; height: 10px; border-radius: 50%; flex: none;
+  }
+  .popover button.opt-jazz .swatch { background: var(--jazz); }
+  .popover button.opt-hiphop .swatch { background: var(--hiphop); }
+  .popover button.opt-allround .swatch { background: var(--allround); }
+  .popover button.opt-swim .swatch { background: var(--swim); }
+  .popover button.opt-clear { color: var(--ink-faint); border-top: 1px solid var(--border); border-radius: 0 0 8px 8px; margin-top: 2px; padding-top: 9px; }
+  .popover button.opt-clear:hover { background: var(--surface-alt); color: var(--ink-soft); }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--border);
+  }
+  .stat {
+    text-align: center;
+    padding: 10px 6px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-alt);
+  }
+  .stat .stat-num {
+    font-size: 20px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    display: block;
+    line-height: 1.2;
+  }
+  .stat.jazz .stat-num { color: var(--jazz); }
+  .stat.hiphop .stat-num { color: var(--hiphop); }
+  .stat.allround .stat-num { color: var(--allround); }
+  .stat.swim .stat-num { color: var(--swim); }
+  .stat .stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+
+  .footnote {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    margin-top: 16px;
+  }
+
+  .backup-row {
+    text-align: center;
+    margin-top: 8px;
+  }
+  .backup-row button {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    cursor: pointer;
+    padding: 4px 6px;
+  }
+  .backup-row button:hover { color: var(--ink-soft); text-decoration: underline; }
+  .backup-row .sep { color: var(--ink-faint); font-size: 11px; }
+
+  /* Tucked-away theme switcher: small corner icon + popup menu */
+  .theme-fab {
+    position: absolute;
+    top: -6px;
+    right: 4px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-soft);
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    z-index: 22;
+    transition: transform 0.15s ease, color 0.15s ease;
+  }
+  .theme-fab:hover { transform: translateY(-1px); color: var(--accent); }
+  .theme-fab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .theme-menu {
+    position: absolute;
+    top: 32px;
+    right: 4px;
+    z-index: 22;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow);
+    padding: 6px;
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    animation: pop-in 0.12s ease-out;
+  }
+  .theme-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ink);
+    padding: 7px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+  }
+  .theme-option:hover { background: var(--surface-alt); }
+  .theme-option .swatch {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    flex: none;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55);
+  }
+  .theme-option .check {
+    margin-left: auto;
+    color: var(--accent);
+    font-weight: 800;
+    opacity: 0;
+    font-size: 13px;
+  }
+  .theme-option.active .check { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .day-cell, .nav-btn, .popover, .theme-fab, .theme-menu { transition: none; animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="masthead">
+    <p class="kicker">Dance Log</p>
+    <h1>跳舞打卡日历</h1>
+  </div>
+
+  <div class="card">
+    <button class="theme-fab" id="themeFab" aria-label="选择配色" title="选择配色">&#127912;</button>
+
+    <div class="month-nav">
+      <button class="nav-btn" id="prevBtn" aria-label="上个月">&#8249;</button>
+      <div class="month-title-wrap">
+        <p class="month-title" id="monthTitle"></p>
+        <button class="today-link" id="todayBtn">回到今天</button>
+      </div>
+      <button class="nav-btn" id="nextBtn" aria-label="下个月">&#8250;</button>
+    </div>
+
+    <div class="legend">
+      <span class="legend-pill jazz"><span class="legend-dot"></span>Jazz</span>
+      <span class="legend-pill hiphop"><span class="legend-dot"></span>Hip-Hop</span>
+      <span class="legend-pill allround"><span class="legend-dot"></span>全能</span>
+      <span class="legend-pill swim"><span class="legend-dot"></span>游泳</span>
+    </div>
+
+    <div class="weekdays">
+      <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <p class="footnote">点击日期记录当天上课类型 · 数据仅保存在本机浏览器中</p>
+  <div class="backup-row">
+    <button id="exportBtn">导出备份</button>
+    <span class="sep">·</span>
+    <button id="importBtn">导入备份</button>
+    <input type="file" id="importFile" accept="application/json" hidden>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'danceCheckinData';
+  const SKIN_KEY = 'danceCheckinSkin';
+  const CLASS_TYPES = {
+    jazz: { label: 'Jazz' },
+    hiphop: { label: 'Hip-Hop' },
+    allround: { label: '全能' },
+    swim: { label: '游泳' }
+  };
+
+  const SKINS = [
+    { id: 'pink-white', label: '粉白', bg: '#FFF8F3', accent: '#FF7FA0' },
+    { id: 'pink-blue', label: '粉蓝', bg: '#F5FAFE', accent: '#FF6FA3' },
+    { id: 'lavender', label: '薰衣草紫', bg: '#FAF7FE', accent: '#A47FEA' },
+    { id: 'mint', label: '薄荷绿', bg: '#F6FDFA', accent: '#3FBE8C' },
+    { id: 'peach', label: '蜜桃橙黄', bg: '#FFFAF3', accent: '#FFA24D' },
+    { id: 'midnight', label: '夜间紫', bg: '#221C27', accent: '#FF8FAE' }
+  ];
+
+  let data = {};
+  try { data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { data = {}; }
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function applySkin(skinId) {
+    document.documentElement.setAttribute('data-skin', skinId);
+    localStorage.setItem(SKIN_KEY, skinId);
+    document.querySelectorAll('.theme-option').forEach(opt => {
+      opt.classList.toggle('active', opt.dataset.skin === skinId);
+    });
+  }
+
+  function closeThemeMenu() {
+    const menu = document.getElementById('themeMenu');
+    if (menu) menu.remove();
+    const overlay = document.querySelector('.theme-overlay');
+    if (overlay) overlay.remove();
+  }
+
+  function openThemeMenu() {
+    if (document.getElementById('themeMenu')) { closeThemeMenu(); return; }
+    closePopover();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay theme-overlay';
+    overlay.addEventListener('click', closeThemeMenu);
+    document.querySelector('.card').appendChild(overlay);
+
+    const menu = document.createElement('div');
+    menu.className = 'theme-menu';
+    menu.id = 'themeMenu';
+    const currentSkin = document.documentElement.getAttribute('data-skin');
+
+    SKINS.forEach(skin => {
+      const opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'theme-option' + (skin.id === currentSkin ? ' active' : '');
+      opt.dataset.skin = skin.id;
+      opt.innerHTML = `<span class="swatch" style="background:linear-gradient(135deg, ${skin.bg} 50%, ${skin.accent} 50%)"></span>${skin.label}<span class="check">&#10003;</span>`;
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        applySkin(skin.id);
+        closeThemeMenu();
+      });
+      menu.appendChild(opt);
+    });
+
+    document.querySelector('.card').appendChild(menu);
+  }
+
+  document.getElementById('themeFab').addEventListener('click', (e) => {
+    e.stopPropagation();
+    openThemeMenu();
+  });
+
+  applySkin(localStorage.getItem(SKIN_KEY) || 'pink-white');
+
+  const today = new Date();
+  let viewYear = today.getFullYear();
+  let viewMonth = today.getMonth(); // 0-indexed
+
+  const monthTitle = document.getElementById('monthTitle');
+  const grid = document.getElementById('grid');
+  const statsEl = document.getElementById('stats');
+  let openPopover = null;
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function dateKey(y, m, d) { return `${y}-${pad(m + 1)}-${pad(d)}`; }
+
+  function closePopover() {
+    if (openPopover) {
+      openPopover.remove();
+      openPopover = null;
+    }
+    const overlay = document.querySelector('.overlay:not(.theme-overlay)');
+    if (overlay) overlay.remove();
+  }
+
+  function openPicker(cell, key) {
+    closePopover();
+    closeThemeMenu();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.addEventListener('click', closePopover);
+    document.body.appendChild(overlay);
+
+    const pop = document.createElement('div');
+    pop.className = 'popover';
+    pop.innerHTML = `
+      <button class="opt-jazz"><span class="swatch"></span>Jazz</button>
+      <button class="opt-hiphop"><span class="swatch"></span>Hip-Hop</button>
+      <button class="opt-allround"><span class="swatch"></span>全能</button>
+      <button class="opt-swim"><span class="swatch"></span>游泳</button>
+      <button class="opt-clear">清除打卡</button>
+    `;
+    document.body.appendChild(pop);
+
+    const rect = cell.getBoundingClientRect();
+    const popW = 136;
+    let left = rect.left + window.scrollX + rect.width / 2 - popW / 2;
+    left = Math.max(10, Math.min(left, window.innerWidth - popW - 10));
+    let top = rect.bottom + window.scrollY + 6;
+    if (rect.bottom + 200 > window.innerHeight) {
+      top = rect.top + window.scrollY - 6 - pop.offsetHeight;
+    }
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+
+    pop.querySelector('.opt-jazz').addEventListener('click', () => { data[key] = 'jazz'; save(); closePopover(); render(); });
+    pop.querySelector('.opt-hiphop').addEventListener('click', () => { data[key] = 'hiphop'; save(); closePopover(); render(); });
+    pop.querySelector('.opt-allround').addEventListener('click', () => { data[key] = 'allround'; save(); closePopover(); render(); });
+    pop.querySelector('.opt-swim').addEventListener('click', () => { data[key] = 'swim'; save(); closePopover(); render(); });
+    pop.querySelector('.opt-clear').addEventListener('click', () => { delete data[key]; save(); closePopover(); render(); });
+
+    openPopover = pop;
+  }
+
+  function render() {
+    const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    monthTitle.textContent = `${viewYear}年 ${monthNames[viewMonth]}`;
+
+    grid.innerHTML = '';
+    const firstDay = new Date(viewYear, viewMonth, 1);
+    // Monday-first offset
+    const startOffset = (firstDay.getDay() + 6) % 7;
+    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+    for (let i = 0; i < startOffset; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'day-cell empty';
+      grid.appendChild(empty);
+    }
+
+    const counts = { jazz: 0, hiphop: 0, allround: 0, swim: 0 };
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const key = dateKey(viewYear, viewMonth, d);
+      const type = data[key];
+      const cell = document.createElement('button');
+      cell.type = 'button';
+      cell.className = 'day-cell';
+      if (type) { cell.classList.add(type); counts[type]++; }
+
+      const isToday = viewYear === today.getFullYear() && viewMonth === today.getMonth() && d === today.getDate();
+      if (isToday) cell.classList.add('today');
+
+      const num = document.createElement('span');
+      num.className = 'day-num';
+      num.textContent = d;
+      cell.appendChild(num);
+
+      if (type) {
+        const tag = document.createElement('span');
+        tag.className = 'day-tag';
+        tag.textContent = CLASS_TYPES[type].label;
+        cell.appendChild(tag);
+      }
+
+      cell.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (openPopover && openPopover.dataset.key === key) { closePopover(); return; }
+        openPicker(cell, key);
+        if (openPopover) openPopover.dataset.key = key;
+      });
+
+      grid.appendChild(cell);
+    }
+
+    statsEl.innerHTML = `
+      <div class="stat jazz"><span class="stat-num">${counts.jazz}</span><span class="stat-label">Jazz</span></div>
+      <div class="stat hiphop"><span class="stat-num">${counts.hiphop}</span><span class="stat-label">Hip-Hop</span></div>
+      <div class="stat allround"><span class="stat-num">${counts.allround}</span><span class="stat-label">全能</span></div>
+      <div class="stat swim"><span class="stat-num">${counts.swim}</span><span class="stat-label">游泳</span></div>
+    `;
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    viewMonth--; if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+    closePopover(); render();
+  });
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    viewMonth++; if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+    closePopover(); render();
+  });
+  document.getElementById('todayBtn').addEventListener('click', () => {
+    viewYear = today.getFullYear(); viewMonth = today.getMonth();
+    closePopover(); render();
+  });
+
+  // Backup: export / import
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = `${today.getFullYear()}${pad(today.getMonth() + 1)}${pad(today.getDate())}`;
+    a.href = url;
+    a.download = `跳舞打卡备份-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  const importFile = document.getElementById('importFile');
+  document.getElementById('importBtn').addEventListener('click', () => importFile.click());
+  importFile.addEventListener('change', () => {
+    const file = importFile.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const imported = JSON.parse(reader.result);
+        if (typeof imported !== 'object' || imported === null || Array.isArray(imported)) {
+          throw new Error('格式不对');
+        }
+        const merge = confirm('导入备份：点"确定"与现有记录合并（同一天以备份文件为准），点"取消"则放弃导入。');
+        if (merge) {
+          data = Object.assign({}, data, imported);
+          save();
+          render();
+          alert('导入完成');
+        }
+      } catch (err) {
+        alert('这个文件看起来不是有效的备份文件');
+      }
+      importFile.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  render();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
