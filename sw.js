@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dance-checkin-v1';
+const CACHE_NAME = 'dance-checkin-v2';
 const ASSETS = [
   './',
   './index.html',

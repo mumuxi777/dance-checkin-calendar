@@ -1,7 +1,7 @@
 {
-  "name": "跳舞打卡日历",
+  "name": "打卡日历",
   "short_name": "打卡日历",
-  "description": "记录 Jazz / Hip-Hop / 全能 / 游泳 上课打卡的可爱日历",
+  "description": "可自定义类型和颜色的打卡日历",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
